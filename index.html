@@ -48,7 +48,7 @@ h1{margin:2px 0 0;font-size:24px;font-weight:700;text-wrap:balance}
 .filtros label{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);font-weight:600}
 .link{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap;font-size:13px}
 .link:hover{text-decoration:underline}
-.copiar{font:inherit;font-size:12px;background:none;border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--muted);cursor:pointer;margin-left:6px}
+.copiar{font:inherit;font-size:12px;background:none;border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--muted);cursor:pointer;white-space:nowrap;display:block;margin-top:4px}
 .barra input{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--fg);min-width:0;width:280px;max-width:100%}
 .leyenda{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 .leyenda span{display:flex;align-items:center;gap:6px}
@@ -222,7 +222,7 @@ function filas(){
     <td><span class="pill ${f.semaforo}"><i class="dot ${f.semaforo}"></i>${NOM[f.semaforo]}</span></td>
     <td><div class="fact">${esc(f.numero)}${String(f.referencia||"").toUpperCase().includes("ANULADA")?' <span class="pill rojo">Ref: ANULADA</span>':''}</div><div class="prov">${esc(f.proveedor)}</div></td>
     <td class="num" style="text-align:left">${fecha(f.fecha_factura)}</td>
-    <td class="num" style="text-align:left">${fecha(f.fecha_creacion_odoo)}<span class="prov">${esc(f.creado_por)}</span></td>
+    <td class="num" style="text-align:left">${fecha(f.fecha_creacion_odoo)}<span class="prov" style="display:block;font-family:var(--f-ui)">${esc(f.creado_por)}</span></td>
     <td class="num">${f.dias_borrador}</td>
     <td class="num">${fmt(f.total)}</td>
     <td><a class="link" href="${url(f.odoo_id)}" target="_blank" rel="noopener">Abrir</a><button class="copiar" type="button" data-c="${f.odoo_id}">Copiar enlace</button></td>
