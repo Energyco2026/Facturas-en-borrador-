@@ -81,6 +81,9 @@ footer{font-size:12px;color:var(--muted)}
 .login .btn{padding:10px 12px;font-size:14px}
 .error{color:var(--rojo);font-size:13px;min-height:18px}
 .sesion{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.actualizar{font:inherit;font-size:12px;font-weight:600;background:var(--fg);color:var(--bg,#fff);border:0;border-radius:6px;padding:5px 12px;cursor:pointer}
+.actualizar:disabled{opacity:.6;cursor:wait}
+#msgAct{font-size:12px}
 .salir{font:inherit;font-size:12px;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;color:var(--fg);cursor:pointer}
 .marca{display:flex;gap:18px;align-items:flex-start;min-width:0}
 .marca>div{min-width:0}
@@ -117,7 +120,7 @@ footer{font-size:12px;color:var(--muted)}
     </div>
   </header>
 
-  <div class="sesion"><span id="quien"></span><span id="corte"></span><button class="salir" id="salir" type="button">Cerrar sesión</button></div>
+  <div class="sesion"><span id="quien"></span><span id="corte"></span><button class="actualizar" id="actualizar" type="button">↻ Actualizar desde Odoo</button><span id="msgAct" role="status"></span><button class="salir" id="salir" type="button">Cerrar sesión</button></div>
 
   <div class="resumen" id="resumen"></div>
 
@@ -176,6 +179,29 @@ $("vLogin").addEventListener("submit", async e => {
 });
 
 $("salir").onclick = async () => { await SB.auth.signOut(); location.reload(); };
+
+$("actualizar").onclick = async () => {
+  const b = $("actualizar"), m = $("msgAct");
+  b.disabled = true; b.textContent = "Actualizando… (puede tardar un minuto)"; m.textContent = "";
+  try {
+    const { data:{ session } } = await SB.auth.getSession();
+    if (!session) { location.reload(); return; }
+    const res = await fetch("https://wiqnfnlnsdnkxgshchjg.supabase.co/functions/v1/borradores-actualizar", {
+      method:"POST", headers:{ "Authorization":"Bearer " + session.access_token, "apikey":"sb_publishable_Rk88NYc5jpdJiTQgUKViZA_0VvpbRpE" }
+    });
+    const r = await res.json().catch(()=>({ ok:false, error:"Respuesta inválida del servidor" }));
+    if (!res.ok || !r.ok) throw new Error(r.error || ("Error " + res.status));
+    const mesSel = $("mes").value;
+    await mostrarPanel(usuario);
+    if ([...$("mes").options].some(o=>o.value===mesSel)) { $("mes").value = mesSel; pintar(); }
+    m.style.color = "";
+    m.textContent = `Listo: ${r.en_borrador} en borrador · ${r.nuevas} nuevas · ${r.salieron} ya contabilizadas o eliminadas`;
+  } catch (e) {
+    m.style.color = "#c0392b"; m.textContent = "No se pudo actualizar: " + e.message;
+  } finally {
+    b.disabled = false; b.textContent = "↻ Actualizar desde Odoo";
+  }
+};
 
 async function mostrarPanel(email){
   usuario = email;
